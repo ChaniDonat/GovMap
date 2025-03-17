@@ -24,7 +24,6 @@ export class MapComponent {
       showXY: true,
       identifyOnClick: true
     };
-    debugger
     const map = this.svc.createMapIframe('map',options,223768,638938);// new GovMap.createMap('map', options);
   }
 }
