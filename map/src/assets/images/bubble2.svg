@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 130" width="200" height="130">
+  <!-- בועה -->
+  <path d="M10,30 Q10,10 30,10 L170,10 Q190,10 190,30 L190,70 Q190,90 170,90 L30,90 Q10,90 10,70 Z"
+        fill="rgba(255, 255, 255, 0.9)" stroke="#007770" stroke-width="4"/>
+  
+  <!-- חץ תחתון -->
+  <polygon points="95,90 100,110 105,90" fill="rgba(255, 255, 255, 0.9)" stroke="#007770" stroke-width="2"/>
+  
+  <!-- עיגול תחתון -->
+  <circle cx="100" cy="115" r="6" fill="#007770" stroke="white" stroke-width="2"/>
+  
+  <!-- כיתוב -->
+  <text x="50%" y="40%" dominant-baseline="middle" text-anchor="middle" fill="#004455" font-size="50" font-weight="bold">
+    אני כאן
+  </text>
+</svg>

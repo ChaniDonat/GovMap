@@ -64,14 +64,14 @@ export interface GovMapObject {
     //     "LINE": 3,
     //     "CIRCLE": 4
     // },
-    // "drawType": {
-    //     "Point": 0,
-    //     "Polyline": 1,
-    //     "Polygon": 2,
-    //     "Circle": 3,
-    //     "Rectangle": 4,
-    //     "FreehandPolygon": 6
-    // },
+    "drawType": {
+        "Point": 0,
+        "Polyline": 1,
+        "Polygon": 2,
+        "Circle": 3,
+        "Rectangle": 4,
+        "FreehandPolygon": 6
+    },
     // "rendererType": {
     //     "Simple": 0,
     //     "SimplePicture": 1,
@@ -153,7 +153,7 @@ export interface GovMapObject {
     showExportMap: () => void
     closeBubble: () => void
     draw: (type: any) => void
-    displayGeometries: (data: any) => void
+    displayGeometries: (data: any) => any
     clearSelection: () => void
     clearDrawings: () => void
     clearGeometriesByName: (names: any) => void
