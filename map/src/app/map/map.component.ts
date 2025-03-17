@@ -11,7 +11,7 @@ declare var GovMap: any;
 })
 export class MapComponent {
   constructor(private svc: GovMapService) {
-    debugger
+    
   }
 
   async ngOnInit() {
@@ -22,8 +22,8 @@ export class MapComponent {
       visibleLayers: ["cell_active", "bus_stops", "SUB_GUSH_ALL", "PARCEL_ALL"],
       layers: ["cell_active", "bus_stops", "SUB_GUSH_ALL", "PARCEL_ALL", "parcel_all"],
       showXY: true,
-      identifyOnClick: true
+      identifyOnClick: true,
     };
-    const map = this.svc.createMapIframe('map',options,223768,638938);// new GovMap.createMap('map', options);
+    const map = this.svc.createMapIframe('map');// new GovMap.createMap('map', options);
   }
 }

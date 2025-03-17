@@ -1,14 +1,14 @@
 import { Injectable } from '@angular/core';
 import { GovMapObject } from '../models/gov-map-object.model';
+import { BehaviorSubject } from 'rxjs';
 
 @Injectable({
   providedIn: 'root'
 })
 export class GovMapService {
   govMap?: GovMapObject
-  points: any[] = [];
-  gushTemp: string[] = [];
-  helkaTemp: string[] = [];
+  private mapReadySubject = new BehaviorSubject<boolean>(false); // Tracks if the map is ready
+  mapReady$ = this.mapReadySubject.asObservable(); // Observable to listen for readiness
 
   constructor() { }
 
@@ -41,9 +41,19 @@ export class GovMapService {
 
   }
 
-  createMapIframe(divId: string, options: any, corX: number, corY: number) {
-    this.govMap?.createMap(divId, options);
-    this.zoom(corX, corY, 8);
+  async createMapIframe(divId: string) {
+    const options = {
+      token: '2596da32-3178-4a04-b596-aaaf9a9df2df',
+      visibleLayers: ["cell_active", "bus_stops", "SUB_GUSH_ALL", "PARCEL_ALL"],
+      layers: ["cell_active", "bus_stops", "SUB_GUSH_ALL", "PARCEL_ALL", "parcel_all"],
+      showXY: true,
+      identifyOnClick: true,
+      onLoad: (e: any) => this.loadMap(),
+    };
+    this.govMap?.createMap(divId, options)
+  }
+  loadMap() {
+    this.mapReadySubject.next(true);
   }
 
   zoom(corX: number, corY: number, zoomLevel: number) {
@@ -66,7 +76,7 @@ export class GovMapService {
         height: 48
       },
       clearExisting: false,
-      data: {} 
+      data: {}
     });
     this.zoom(corX, corY, 8); // זום להתמקדות בנקודה
   }
