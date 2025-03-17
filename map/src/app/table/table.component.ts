@@ -2,6 +2,7 @@ import { Component, Output } from '@angular/core';
 import { EventEmitter } from 'stream';
 import { GovMapService } from '../services/gov-map.service';
 import { CommonModule } from '@angular/common';
+import { log } from 'console';
 
 @Component({
   selector: 'app-table',
@@ -22,7 +23,13 @@ export class TableComponent {
 
   constructor(private govMapService: GovMapService) {}
 
-  ngOnInit(): void {}
+  ngOnInit(): void {
+    this.govMapService.mapReady$.subscribe((isReady) => {
+      if (isReady) {
+        this.govMapService.zoom(this.tableData[0].x, this.tableData[0].y, 8);
+      }
+    });
+  }
 
   onMouseEnter(row: any) {
     // שולח את הערכים למפה כאשר העכבר עובר על שורה
