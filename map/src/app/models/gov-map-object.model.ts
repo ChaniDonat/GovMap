@@ -142,7 +142,7 @@ export interface GovMapObject {
     getAddEntitiesSample: (params: any) => void
     refreshResource: (params: any) => void
     getLayerDef: (params: any) => void
-    intersectFeatures: (params: any) => void
+    intersectFeatures: (params: any) => any
     intersectFeaturesByWhereClause: (params: any) => void
     searchAndLocate: (params: any) => void
     setBackground: (backgroundId: any) => void
@@ -162,7 +162,7 @@ export interface GovMapObject {
     clearMapMarker: () => void
     setMapMarker: (params: any) => void
     getXY: () => void
-    geocode: (params: any) => void
+    geocode: (params: any) => any
     getFreeSearchResult: (params: any) => void
     setDrawPointTooltip: (params: any) => void
     gpsOn: () => void
