@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { GovMapObject } from '../models/gov-map-object.model';
 import { BehaviorSubject } from 'rxjs';
+import { response } from 'express';
 
 @Injectable({
   providedIn: 'root'
@@ -44,7 +45,8 @@ export class GovMapService {
   async createMapIframe(divId: string) {
     const options = {
       token: '2596da32-3178-4a04-b596-aaaf9a9df2df',
-      visibleLayers: ["cell_active", "bus_stops", "SUB_GUSH_ALL", "PARCEL_ALL"],
+      visibleLayers: [],
+      // ["cell_active", "bus_stops", "SUB_GUSH_ALL", "PARCEL_ALL"],
       layers: ["cell_active", "bus_stops", "SUB_GUSH_ALL", "PARCEL_ALL", "parcel_all"],
       showXY: true,
       identifyOnClick: true,
@@ -70,16 +72,49 @@ export class GovMapService {
       names: ['point1'],
       geometryType: this.govMap.drawType.Point,
       defaultSymbol: {
-        url: 'http://localhost:4200/assets/images/bubble2.svg',//,תמונה מקומית
+        url: 'http://localhost:4200/assets/images/bubbleRed.svg',//,תמונה מקומית
+        width: 25,
+        height: 30
+      },
+      clearExisting: true,
+      data: {}
+    });
+    this.zoom(corX, corY, 7); // זום להתמקדות בנקודה
+  }
 
-        width: 75,
-        height: 48
+  showPoints(data: any) {
+    let points = data.map((p: any) => {
+      return `POINT(${p.x} ${p.y})`
+    })
+    debugger
+    this.govMap!.displayGeometries({
+      wkts: points,
+      names: ['points'],
+      geometryType: this.govMap?.drawType.Point,
+      defaultSymbol: {
+        url: 'http://localhost:4200/assets/images/RedDot.svg',//,תמונה מקומית
+
+        width: 20,
+        height: 20
       },
       clearExisting: false,
       data: {}
     });
-    this.zoom(corX, corY, 8); // זום להתמקדות בנקודה
   }
+
+  intersectFeatures(params: any): Promise<any> {
+    return this.govMap?.intersectFeatures(params);
+  }
+  getCoordinates() {
+    var params = {
+      address: "הרוקמים 26, חולון"
+    };
+
+    this.govMap!.geocode(params).then((response:any) => {
+      console.log(response);
+    });
+  }
+
 }
 
 

@@ -13,20 +13,27 @@ import { log } from 'console';
 })
 export class TableComponent {
   tableData = [
-    { name: ' שאדיקר נחום', x: 223768, y: 638938, col4: 'Data 1', col5: 'Data 2', col6: 'Data 3', col7: 'Data 4', col8: 'Data 5' },
-    { name: 'ירושלים', x: 223754, y: 638823, col4: 'Data 6', col5: 'Data 7', col6: 'Data 8', col7: 'Data 9', col8: 'Data 10' },
-    { name: 'חיפה', x: 223752, y: 638860, col4: 'Data 11', col5: 'Data 12', col6: 'Data 13', col7: 'Data 14', col8: 'Data 15' },
-    { name: 'ירושלים', x: 218080, y: 627112, col4: 'Data 6', col5: 'Data 7', col6: 'Data 8', col7: 'Data 9', col8: 'Data 10' },
-    { name: 'ירושלים', x: 223229, y: 637035, col4: 'Data 6', col5: 'Data 7', col6: 'Data 8', col7: 'Data 9', col8: 'Data 10' },
-    { name: 'ירושלים', x: 219551, y: 634004, col4: 'Data 6', col5: 'Data 7', col6: 'Data 8', col7: 'Data 9', col8: 'Data 10' },
+    { name: ' שאדיקר נחום', x: 219730, y: 635514, col4: 'Data 1', col5: 'Data 2', col6: 'Data 3', col7: 'Data 4', col8: 'Data 5' },
+    { name: 'ירושלים', x: 219832, y: 635857, col4: 'Data 6', col5: 'Data 7', col6: 'Data 8', col7: 'Data 9', col8: 'Data 10' },
+    { name: 'חיפה', x: 221330, y: 633930, col4: 'Data 11', col5: 'Data 12', col6: 'Data 13', col7: 'Data 14', col8: 'Data 15' },
+    { name: 'ירושלים', x: 221157, y: 629637, col4: 'Data 6', col5: 'Data 7', col6: 'Data 8', col7: 'Data 9', col8: 'Data 10' },
+    { name: 'ירושלים', x: 221393, y: 633431, col4: 'Data 6', col5: 'Data 7', col6: 'Data 8', col7: 'Data 9', col8: 'Data 10' },
+    { name: 'ירושלים', x: 220201, y: 630588, col4: 'Data 6', col5: 'Data 7', col6: 'Data 8', col7: 'Data 9', col8: 'Data 10' },
+    { name: 'תל אביב', x: 216721, y: 630524, col4: 'Data 6', col5: 'Data 7', col6: 'Data 8', col7: 'Data 9', col8: 'Data 10' },
+    { name: 'ירושלים', x: 219766, y: 635698, col4: 'Data 6', col5: 'Data 7', col6: 'Data 8', col7: 'Data 9', col8: 'Data 10' },
+
   ];
 
-  constructor(private govMapService: GovMapService) {}
+  constructor(private govMapService: GovMapService) { }
 
   ngOnInit(): void {
     this.govMapService.mapReady$.subscribe((isReady) => {
       if (isReady) {
-        this.govMapService.zoom(this.tableData[0].x, this.tableData[0].y, 8);
+        // this.govMapService.zoom(this.tableData[0].x, this.tableData[0].y, 8);
+        this.govMapService.showPoints(this.tableData)
+        this.govMapService.zoom(220218, 631937, 8);
+        // 220218.58,631937.52
+        this.showExample()
       }
     });
   }
@@ -34,5 +41,23 @@ export class TableComponent {
   onMouseEnter(row: any) {
     // שולח את הערכים למפה כאשר העכבר עובר על שורה
     this.govMapService.showCustomBubble(row.x, row.y);
+    let filterData = this.tableData.filter((d: any) => d != row)
+    this.govMapService.showPoints(filterData)
+    // this.govMapService.zoom(row.x, row.y, 8);
+
+
+  }
+
+  showExample(): void {
+    const params = {
+      address: "הרוקמים 26 חולון",
+      layerName: "SUB_GUSH_ALL",
+      fields: ['GUSH_NUM']
+    };
+
+    // this.govMapService.intersectFeatures(params).then(response => {
+    //   console.log(response);
+    // });
+    this.govMapService.getCoordinates();
   }
 }
