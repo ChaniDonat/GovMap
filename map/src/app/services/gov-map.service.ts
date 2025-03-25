@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import { GovMapObject } from '../models/gov-map-object.model';
 import { BehaviorSubject } from 'rxjs';
 import { response } from 'express';
+import { HttpClient } from '@angular/common/http';
 
 @Injectable({
   providedIn: 'root'
@@ -44,7 +45,7 @@ export class GovMapService {
 
   async createMapIframe(divId: string) {
     const options = {
-      token: '2596da32-3178-4a04-b596-aaaf9a9df2df',
+      token: '5a4b8472-b95b-4687-8179-0ccb621c7990',
       visibleLayers: [],
       // ["cell_active", "bus_stops", "SUB_GUSH_ALL", "PARCEL_ALL"],
       layers: ["cell_active", "bus_stops", "SUB_GUSH_ALL", "PARCEL_ALL", "parcel_all"],
@@ -72,9 +73,9 @@ export class GovMapService {
       names: ['point1'],
       geometryType: this.govMap.drawType.Point,
       defaultSymbol: {
-        url: 'http://localhost:4200/assets/images/bubbleRed.svg',//,תמונה מקומית
+        url: 'http://localhost:4200/assets/images/geo-alt-fill.svg',//,תמונה מקומית
         width: 25,
-        height: 30
+        height: 29
       },
       clearExisting: true,
       data: {}
@@ -92,29 +93,33 @@ export class GovMapService {
       names: ['points'],
       geometryType: this.govMap?.drawType.Point,
       defaultSymbol: {
-        url: 'http://localhost:4200/assets/images/RedDot.svg',//,תמונה מקומית
+        url: 'http://localhost:4200/assets/images/circle-blue.svg',//,תמונה מקומית
 
-        width: 20,
-        height: 20
+        width: 15,
+        height: 15
       },
       clearExisting: false,
       data: {}
     });
   }
-
-  intersectFeatures(params: any): Promise<any> {
-    return this.govMap?.intersectFeatures(params);
-  }
-  getCoordinates() {
+  getCoordinates(address: string): Promise<{ corX: number, corY: number }> {
     var params = {
-      address: "הרוקמים 26, חולון"
+      keyword: address,
+      type: "AccuracyOnly"
     };
 
-    this.govMap!.geocode(params).then((response:any) => {
-      console.log(response);
+   return  this.govMap!.geocode(params).then((response: any) => {
+      console.log("תוצאה:", response);
+      if (response.data?.length > 0) {
+        return {
+          corX: response.data[0].X,
+          corY: response.data[0].Y
+        }
+      }
+      else {
+        throw new Error("לא נמצאו תוצאות");
+      }
     });
   }
-
 }
-
 
