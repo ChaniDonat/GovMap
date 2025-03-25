@@ -27,13 +27,14 @@ export class TableComponent {
   constructor(private govMapService: GovMapService) { }
 
   ngOnInit(): void {
-    this.govMapService.mapReady$.subscribe((isReady) => {
+    this.govMapService.mapReady$.subscribe(async (isReady) => {
       if (isReady) {
         // this.govMapService.zoom(this.tableData[0].x, this.tableData[0].y, 8);
         this.govMapService.showPoints(this.tableData)
-        this.govMapService.zoom(220218, 631937, 8);
+        // this.govMapService.zoom(220218, 631937, 8);
         // 220218.58,631937.52
-        this.showExample()
+        let point=this.govMapService.getCoordinates(" שאדיקר נחום ירושלים");
+        this.govMapService.zoom((await point).corX, (await point).corY,8);
       }
     });
   }
@@ -46,18 +47,5 @@ export class TableComponent {
     // this.govMapService.zoom(row.x, row.y, 8);
 
 
-  }
-
-  showExample(): void {
-    const params = {
-      address: "הרוקמים 26 חולון",
-      layerName: "SUB_GUSH_ALL",
-      fields: ['GUSH_NUM']
-    };
-
-    // this.govMapService.intersectFeatures(params).then(response => {
-    //   console.log(response);
-    // });
-    this.govMapService.getCoordinates();
   }
 }
