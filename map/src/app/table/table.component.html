@@ -3,26 +3,29 @@
 <table class="table table-striped" dir="rtl" style="text-align: right;">
     <thead>
         <tr>
-            <th scope="col">שם</th>
-            <th scope="col">X</th>
-            <th scope="col">Y</th>
-            <th scope="col"> 4</th>
-            <th scope="col"> 5</th>
-            <th scope="col"> 6</th>
-            <th scope="col"> 7</th>
-            <th scope="col"> 8</th>
+            <th scope="col-2">יום מכירה</th>
+            <th scope="col-2">גוש חלקה</th>
+            <th scope="col-2">שווי מכירה</th>
+            <th scope="col-2"> תמורה מוצהרת</th>
+            <th scope="col"> סוג נכס</th>
+            <th scope="col"> מהות</th>
+            <th scope="col"> שנת בניה</th>
+            <th scope="col"> שטח במ"ר</th>
+            <th scope="col">חלק נמכר</th>
+
         </tr>
     </thead>
     <tbody>
-        <tr *ngFor="let row of tableData" (mouseenter)="onMouseEnter(row)">
-            <td>{{ row.name }}</td>
-            <td>{{ row.x }}</td>
-            <td>{{ row.y }}</td>
-            <td>{{ row.col4 }}</td>
-            <td>{{ row.col5 }}</td>
-            <td>{{ row.col6 }}</td>
-            <td>{{ row.col7 }}</td>
-            <td>{{ row.col8 }}</td>
+        <tr *ngFor="let row of data.outArrData" (mouseenter)="onMouseEnter(row)">
+            <td>{{ row.ShmYomMechira }}</td>
+            <td>{{ row.ShmGushHelkaTat }}</td>
+            <td>{{ row.ShmShoviIska }}</td>
+            <td>{{ row.shmShoviMuzhar }}</td>
+            <td>{{ row.ShmSugNeches }}</td>
+            <td>{{ row.ShmMahutIska }}</td>
+            <td>{{ row.ShmShnatBnia }}</td>
+            <td>{{ row.ShmShetch }}</td>
+            <td>{{ row.ShmMechane }}/{{row.ShmMechane}}</td>
         </tr>
     </tbody>
 </table>
