@@ -46,8 +46,8 @@ export class GovMapService {
   async createMapIframe(divId: string) {
     const options = {
       token: '5a4b8472-b95b-4687-8179-0ccb621c7990',
-      visibleLayers: [],
-      // ["cell_active", "bus_stops", "SUB_GUSH_ALL", "PARCEL_ALL"],
+      visibleLayers: ["SUB_GUSH_ALL", "PARCEL_ALL"],
+      //  ["cell_active", "bus_stops", "SUB_GUSH_ALL", "PARCEL_ALL"],
       layers: ["cell_active", "bus_stops", "SUB_GUSH_ALL", "PARCEL_ALL", "parcel_all"],
       showXY: true,
       identifyOnClick: true,
@@ -62,7 +62,8 @@ export class GovMapService {
   zoom(corX: number, corY: number, zoomLevel: number) {
     this.govMap?.zoomToXY({ x: corX, y: corY, level: zoomLevel, marker: false });
   }
-  showCustomBubble(CorX: number, CorY: number,row:any) {
+  //הצגת בועת מיקום במפה
+  showBubble(CorX: number, CorY: number, row: any) {
     if (!this.govMap) {
       console.error('GovMap is not initialized');
       return;
@@ -78,20 +79,19 @@ export class GovMapService {
       },
       clearExisting: true,
       data: {
-        tooltips: ['זהו טולטיפ לדוגמה'],  // טולטיפ שיופיע בעת מעבר עם העכבר
-        headers: [`מידע אודות העסקה`],  // כותרת הבועה שתוצג
+        tooltips: ['זהו טולטיפ לדוגמה'],
+        headers: [`עסקה`],  
         // bubbles: ['L-123,00.html'],  // מזהה דינמי לדף באתר
-        bubbleUrl:`יישוב ${row.Yeshuv} | חלק נמכר ${row.ShmChalakim} | מהות ${row.ShmMahutIska} | שווי מכירה ${row.ShmShoviIska} | יום מכירה ${row.ShmYomMechira}` // קישור לבועית מידע
+        bubbleUrl: `יישוב ${row.ShmYeshuv} | חלק נמכר ${row.ShmChalakim} | מהות ${row.ShmMahutIska} | שווי מכירה ${row.ShmShoviIska} | יום מכירה ${row.ShmYomMechira}` // קישור לבועית מידע
       }
     });
-    this.zoom(CorX, CorY, 7); // זום להתמקדות בנקודה
+    this.zoom(CorX, CorY, 8); // זום להתמקדות בנקודה
   }
-
+  //הצגת המיקומים של כל העסקאות בנקודה כחולה
   showPoints(data: any) {
     let points = data.map((p: any) => {
       return `POINT(${p.CorX} ${p.CorY})`
     })
-    debugger
     this.govMap!.displayGeometries({
       wkts: points,
       names: ['points'],
@@ -106,6 +106,7 @@ export class GovMapService {
       data: {}
     });
   }
+  //מחזיר מיקום של קאורדינטה לפי כתובת
   getCoordinates(address: string): Promise<{ corX: number, corY: number }> {
     var params = {
       keyword: address,

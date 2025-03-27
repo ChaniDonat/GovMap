@@ -169,10 +169,7 @@ export class TableComponent {
   ngOnInit(): void {
     this.govMapService.mapReady$.subscribe(async (isReady) => {
       if (isReady) {
-        // this.govMapService.zoom(this.tableData[0].x, this.tableData[0].y, 8);
         this.govMapService.showPoints(this.data.outArrData)
-        // this.govMapService.zoom(220218, 631937, 8);
-        // 220218.58,631937.52
         let point = this.govMapService.getCoordinates(this.data.Yeshuv.toString());
         this.govMapService.zoom((await point).corX, (await point).corY, 8);
       }
@@ -187,17 +184,15 @@ export class TableComponent {
         let point = this.govMapService.getCoordinates(`ירושלים ${row.ShmRehov} ${row.ShmMisparBayit}`)
         row.corX = (await point).corX;
         row.corX = (await point).corY;
-       this.govMapService.showCustomBubble((await point).corX, (await point).corY,row);
+       this.govMapService.showBubble((await point).corX, (await point).corY,row);
       }
     }
     else {
-      // שולח את הערכים למפה כאשר העכבר עובר על שורה
-      this.govMapService.showCustomBubble(row.CorX, row.CorY,row);
+      // הצגת בועה על המפה
+      this.govMapService.showBubble(row.CorX, row.CorY,row);
       let filterData = this.data.outArrData.filter((d: any) => d != row)
+      // הצגת המיקומים של כל העסקאות על המפה
       this.govMapService.showPoints(filterData)
-      // this.govMapService.zoom(row.x, row.y, 8);
-
-
     }
   }
 }
