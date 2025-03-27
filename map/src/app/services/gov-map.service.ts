@@ -62,14 +62,13 @@ export class GovMapService {
   zoom(corX: number, corY: number, zoomLevel: number) {
     this.govMap?.zoomToXY({ x: corX, y: corY, level: zoomLevel, marker: false });
   }
-  showCustomBubble(corX: number, corY: number) {
+  showCustomBubble(CorX: number, CorY: number,row:any) {
     if (!this.govMap) {
       console.error('GovMap is not initialized');
       return;
     }
-
     this.govMap.displayGeometries({
-      wkts: [`POINT(${corX} ${corY})`],
+      wkts: [`POINT(${CorX} ${CorY})`],
       names: ['point1'],
       geometryType: this.govMap.drawType.Point,
       defaultSymbol: {
@@ -78,14 +77,19 @@ export class GovMapService {
         height: 29
       },
       clearExisting: true,
-      data: {}
+      data: {
+        tooltips: ['זהו טולטיפ לדוגמה'],  // טולטיפ שיופיע בעת מעבר עם העכבר
+        headers: [`מידע אודות העסקה`],  // כותרת הבועה שתוצג
+        // bubbles: ['L-123,00.html'],  // מזהה דינמי לדף באתר
+        bubbleUrl:`יישוב ${row.Yeshuv} | חלק נמכר ${row.ShmChalakim} | מהות ${row.ShmMahutIska} | שווי מכירה ${row.ShmShoviIska} | יום מכירה ${row.ShmYomMechira}` // קישור לבועית מידע
+      }
     });
-    this.zoom(corX, corY, 7); // זום להתמקדות בנקודה
+    this.zoom(CorX, CorY, 7); // זום להתמקדות בנקודה
   }
 
   showPoints(data: any) {
     let points = data.map((p: any) => {
-      return `POINT(${p.x} ${p.y})`
+      return `POINT(${p.CorX} ${p.CorY})`
     })
     debugger
     this.govMap!.displayGeometries({
@@ -108,7 +112,7 @@ export class GovMapService {
       type: "AccuracyOnly"
     };
 
-   return  this.govMap!.geocode(params).then((response: any) => {
+    return this.govMap!.geocode(params).then((response: any) => {
       console.log("תוצאה:", response);
       if (response.data?.length > 0) {
         return {
