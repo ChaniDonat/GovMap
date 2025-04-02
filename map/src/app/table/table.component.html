@@ -17,15 +17,15 @@
     </thead>
     <tbody>
         <tr *ngFor="let row of data.outArrData" (mouseenter)="onMouseEnter(row)">
-            <td>{{ row.ShmYomMechira }}</td>
+                <td>{{ row.ShmYomMechira | date:'dd/MM/yyyy' }}</td>
             <td>{{ row.ShmGushHelkaTat }}</td>
-            <td>{{ row.ShmShoviIska }}</td>
-            <td>{{ row.shmShoviMuzhar }}</td>
+            <td>{{ row.ShmShoviIska|number }}</td>
+            <td>{{ row.shmShoviMuzhar|number }}</td>
             <td>{{ row.ShmSugNeches }}</td>
             <td>{{ row.ShmMahutIska }}</td>
             <td>{{ row.ShmShnatBnia }}</td>
             <td>{{ row.ShmShetch }}</td>
-            <td>{{ row.ShmMechane }}/{{row.ShmMechane}}</td>
+            <td>{{ row.ShmMone }}/{{row.ShmMechane}}</td>
         </tr>
     </tbody>
 </table>
