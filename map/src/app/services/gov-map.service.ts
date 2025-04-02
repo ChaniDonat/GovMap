@@ -46,11 +46,11 @@ export class GovMapService {
   async createMapIframe(divId: string) {
     const options = {
       token: '5a4b8472-b95b-4687-8179-0ccb621c7990',
-      visibleLayers: ["SUB_GUSH_ALL", "PARCEL_ALL"],
-      //  ["cell_active", "bus_stops", "SUB_GUSH_ALL", "PARCEL_ALL"],
+      visibleLayers: [],
       layers: ["cell_active", "bus_stops", "SUB_GUSH_ALL", "PARCEL_ALL", "parcel_all"],
       showXY: true,
       identifyOnClick: true,
+      layersMode: 4,
       onLoad: (e: any) => this.loadMap(),
     };
     this.govMap?.createMap(divId, options)
@@ -58,10 +58,27 @@ export class GovMapService {
   loadMap() {
     this.mapReadySubject.next(true);
   }
-
+  setVisibleLayers(showGush: boolean) {
+    if (this.govMap) {
+      if (showGush) {
+        this.govMap.setVisibleLayers(["SUB_GUSH_ALL", "PARCEL_ALL"], []);
+      }
+      else {
+        this.govMap.setVisibleLayers([], ["SUB_GUSH_ALL", "PARCEL_ALL"]);
+      }
+    }
+  }
   zoom(corX: number, corY: number, zoomLevel: number) {
     this.govMap?.zoomToXY({ x: corX, y: corY, level: zoomLevel, marker: false });
   }
+  formatNumber = (value: number) => {
+    return new Intl.NumberFormat('he-IL').format(value);
+  };
+  formatDate(dateString: string): string {
+    const date = new Date(dateString);
+    return date.toLocaleDateString('he-IL', { day: '2-digit', month: '2-digit', year: 'numeric' }).replace(/\./g, '/');
+  }
+
   //הצגת בועת מיקום במפה
   showBubble(CorX: number, CorY: number, row: any) {
     if (!this.govMap) {
@@ -74,15 +91,19 @@ export class GovMapService {
       geometryType: this.govMap.drawType.Point,
       defaultSymbol: {
         url: 'http://localhost:4200/assets/images/geo-alt-fill.svg',//,תמונה מקומית
-        width: 25,
-        height: 29
+        width: 30,
+        height: 34
       },
       clearExisting: true,
       data: {
-        tooltips: ['זהו טולטיפ לדוגמה'],
-        headers: [`עסקה`],  
-        // bubbles: ['L-123,00.html'],  // מזהה דינמי לדף באתר
-        bubbleUrl: `יישוב ${row.ShmYeshuv} | חלק נמכר ${row.ShmChalakim} | מהות ${row.ShmMahutIska} | שווי מכירה ${row.ShmShoviIska} | יום מכירה ${row.ShmYomMechira}` // קישור לבועית מידע
+        headers: [`פרטי עסקה`],
+        bubbleUrl: `<div style="direction: rtl; font-family: Arial, sans-serif; padding: 10px;">
+    <p><strong>יישוב:</strong> ${row.ShmYeshuv}</p>
+    <p><strong>חלק נמכר:</strong> ${row.ShmMone}/${row.ShmMechane}</p>
+    <p><strong>מהות:</strong> ${row.ShmMahutIska}</p>
+    <p><strong>שווי מכירה:</strong> ${this.formatNumber(row.ShmShoviIska)} ₪</p>
+    <p><strong>יום מכירה:</strong> ${this.formatDate(row.ShmYomMechira)}</p>
+  </div>`
       }
     });
     this.zoom(CorX, CorY, 8); // זום להתמקדות בנקודה
@@ -105,6 +126,31 @@ export class GovMapService {
       clearExisting: false,
       data: {}
     });
+    // data.forEach((row: any, index: number) => {
+    const row=data[0]
+      debugger
+  //     this.govMap!.displayGeometries({
+  //       wkts: [`POINT(${row.CorX} ${row.CorY})`],
+  //       names: [`p`],
+  //       geometryType: this.govMap!.drawType.Point,
+  //       defaultSymbol: {
+  //       url: 'http://localhost:4200/assets/images/circle-blue.svg',//,תמונה מקומית
+  //   width: 15,
+  //         height: 15
+  //       },
+  //       clearExisting: false,
+  //       data: {
+  //         headers: [`פרטי עסקה`],
+  //         bubbleUrl: `<div style="direction: rtl; font-family: Arial, sans-serif; padding: 10px;">
+  //   <p><strong>יישוב:</strong> ${row.ShmYeshuv}</p>
+  //   <p><strong>חלק נמכר:</strong> ${row.ShmMone}/${row.ShmMechane}</p>
+  //   <p><strong>מהות:</strong> ${row.ShmMahutIska}</p>
+  //   <p><strong>שווי מכירה:</strong> ${this.formatNumber(row.ShmShoviIska)} ₪</p>
+  //   <p><strong>יום מכירה:</strong> ${this.formatDate(row.ShmYomMechira)}</p>
+  // </div>`
+  //       }
+  //     });
+    // });
   }
   //מחזיר מיקום של קאורדינטה לפי כתובת
   getCoordinates(address: string): Promise<{ corX: number, corY: number }> {
