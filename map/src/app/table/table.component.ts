@@ -51,28 +51,28 @@ export class TableComponent {
         ShmRehov: "ירושלים - ללא רחוב",
         ShmMisparBayit: "12"
       },
-      // {
-      //   Isn: 3568121.0,
-      //   ShmGushHelkaTat: "30043-14-51",
-      //   ShmYeshuv: "3000",
-      //   ShmYomMechira: 20241014,
-      //   ShmShoviIska: 361111.0,
-      //   shmShoviMuzhar: 361111.0,
-      //   ShmChalakim: 0.1111111,
-      //   ShmShnatBnia: 1960,
-      //   ShmShetch: 88,
-      //   ShmSugNeches: 1,
-      //   ShmMahutIska: 101,
-      //   ShmSwCarmen: 1,
-      //   ShmMone: 2,
-      //   ShmMechane: 18,
-      //   ShmSugHishuv: 495,
-      //   ShmSugHishuvFlag: null,
-      //   CorX: null,
-      //   CorY: null,
-      //   ShmRehov: "טרומפלדור",
-      //   ShmMisparBayit: "1"
-      // },
+      {
+        Isn: 3568121.0,
+        ShmGushHelkaTat: "30043-14-51",
+        ShmYeshuv: "3000",
+        ShmYomMechira: 20241014,
+        ShmShoviIska: 361111.0,
+        shmShoviMuzhar: 361111.0,
+        ShmChalakim: 0.1111111,
+        ShmShnatBnia: 1960,
+        ShmShetch: 88,
+        ShmSugNeches: 1,
+        ShmMahutIska: 101,
+        ShmSwCarmen: 1,
+        ShmMone: 2,
+        ShmMechane: 18,
+        ShmSugHishuv: 495,
+        ShmSugHishuvFlag: null,
+        CorX: null,
+        CorY: null,
+        ShmRehov: "טרומפלדור",
+        ShmMisparBayit: "1"
+      },
       {
         Isn: 3430702.0,
         ShmGushHelkaTat: "30616-214-0",
@@ -169,29 +169,19 @@ export class TableComponent {
   ngOnInit(): void {
     this.govMapService.mapReady$.subscribe(async (isReady) => {
       if (isReady) {
+        //כל פעם שמשתנה הנתונים למלאות את הקואורדינטה 
+        await this.govMapService.fillCorodinate(this.data.outArrData)
         this.govMapService.showPoints(this.data.outArrData)
-        let point = this.govMapService.getCoordinates(this.data.Yeshuv.toString());
-        this.govMapService.zoom((await point).corX, (await point).corY, 4);
+        let point =await this.govMapService.getCoordinates(this.data.Yeshuv.toString());
+        this.govMapService.zoom(point.corX, point.corY, 4);
       }
     });
   }
 
   async onMouseEnter(row: any) {
-    debugger
-    if (row.CorX == null || row.CorY == null) {
-      //מה לעשות במקרה ואין לי שם רחוב????
-      if (row.ShmRehov.length) {
-        let point = this.govMapService.getCoordinates(`ירושלים ${row.ShmRehov} ${row.ShmMisparBayit}`)
-        row.corX = (await point).corX;
-        row.corX = (await point).corY;
-        this.govMapService.showBubble((await point).corX, (await point).corY, row);
-      }
-    }
-    else {
-      // הצגת בועה על המפה
-      this.govMapService.showBubble(row.CorX, row.CorY, row);
-    }
-    // הצגת המיקומים של כל העסקאות על המפה
+      await this.govMapService.showBubble(row.CorX, row.CorY, row);
+      this.govMapService.zoom(row.CorX, row.CorY, 8); 
+    // הצגת המיקומים של כל שאר העסקאות על המפה
     let filterData = this.data.outArrData.filter((d: any) => d != row)
     this.govMapService.showPoints(filterData)
   }
