@@ -11,7 +11,12 @@ export class GovMapService {
   govMap?: GovMapObject
   private mapReadySubject = new BehaviorSubject<boolean>(false); // Tracks if the map is ready
   mapReady$ = this.mapReadySubject.asObservable(); // Observable to listen for readiness
-
+  bubbleContent = `<div style="direction: rtl; font-family: Arial, sans-serif; padding: 10px;">
+  <p><strong>יישוב:</strong> {0}</p>
+  <p><strong>חלק נמכר:</strong> {1}/{2}</p>
+  <p><strong>שווי מכירה:</strong> {3} ₪</p>
+  <p><strong>יום מכירה:</strong> {4}</p>
+</div>`
   constructor() { }
 
   async loadScript(scriptUrl: string) {
@@ -81,79 +86,60 @@ export class GovMapService {
 
   //הצגת בועת מיקום במפה
   showBubble(CorX: number, CorY: number, row: any) {
+    return new Promise(resolve => {
+      if (!this.govMap) {
+        console.error('GovMap is not initialized');
+        return;
+      }
+      this.govMap.displayGeometries({
+        wkts: [`POINT(${CorX} ${CorY})`],
+        names: ['bubble'],
+        geometryType: this.govMap.drawType.Point,
+        defaultSymbol: {
+          url: 'http://localhost:4200/assets/images/geo-alt-fill.svg',//,תמונה מקומית
+          width: 30,
+          height: 34
+        },
+        clearExisting: true,
+        data: {
+          headers: [`פרטי עסקה`],
+
+          bubbleHTML: this.bubbleContent,
+          bubbleHTMLParameters: [[row.ShmYeshuv, row.ShmMone, row.ShmMechane, this.formatNumber(row.ShmShoviIska), this.formatDate(row.ShmYomMechira)]]
+        }
+      });
+      resolve(true);
+    });
+  }
+  //הצגת המיקומים של כל העסקאות בנקודה כחולה
+  async showPoints(data: any) {
     if (!this.govMap) {
       console.error('GovMap is not initialized');
       return;
     }
+    const bubbleHTMLParameters = data.map((row: any) => {
+      return [row.ShmYeshuv, row.ShmMone, row.ShmMechane, this.formatNumber(row.ShmShoviIska), this.formatDate(row.ShmYomMechira)]
+    })
     this.govMap.displayGeometries({
-      wkts: [`POINT(${CorX} ${CorY})`],
-      names: ['point1'],
+      wkts: data.map((p: any) => `POINT(${p.CorX} ${p.CorY})`),
+      names: data.map((_: any, i: number) => `point${i}`),
       geometryType: this.govMap.drawType.Point,
       defaultSymbol: {
-        url: 'http://localhost:4200/assets/images/geo-alt-fill.svg',//,תמונה מקומית
-        width: 30,
-        height: 34
-      },
-      clearExisting: true,
-      data: {
-        headers: [`פרטי עסקה`],
-        bubbleUrl: `<div style="direction: rtl; font-family: Arial, sans-serif; padding: 10px;">
-    <p><strong>יישוב:</strong> ${row.ShmYeshuv}</p>
-    <p><strong>חלק נמכר:</strong> ${row.ShmMone}/${row.ShmMechane}</p>
-    <p><strong>מהות:</strong> ${row.ShmMahutIska}</p>
-    <p><strong>שווי מכירה:</strong> ${this.formatNumber(row.ShmShoviIska)} ₪</p>
-    <p><strong>יום מכירה:</strong> ${this.formatDate(row.ShmYomMechira)}</p>
-  </div>`
-      }
-    });
-    this.zoom(CorX, CorY, 8); // זום להתמקדות בנקודה
-  }
-  //הצגת המיקומים של כל העסקאות בנקודה כחולה
-  showPoints(data: any) {
-    let points = data.map((p: any) => {
-      return `POINT(${p.CorX} ${p.CorY})`
-    })
-    this.govMap!.displayGeometries({
-      wkts: points,
-      names: ['points'],
-      geometryType: this.govMap?.drawType.Point,
-      defaultSymbol: {
         url: 'http://localhost:4200/assets/images/circle-blue.svg',//,תמונה מקומית
-
         width: 15,
         height: 15
       },
       clearExisting: false,
-      data: {}
+      data: {
+        headers: data.map(() => `פרטי עסקה`),
+        bubbleHTML: this.bubbleContent,
+        bubbleHTMLParameters: bubbleHTMLParameters
+      }
     });
-    // data.forEach((row: any, index: number) => {
-    const row=data[0]
-      debugger
-  //     this.govMap!.displayGeometries({
-  //       wkts: [`POINT(${row.CorX} ${row.CorY})`],
-  //       names: [`p`],
-  //       geometryType: this.govMap!.drawType.Point,
-  //       defaultSymbol: {
-  //       url: 'http://localhost:4200/assets/images/circle-blue.svg',//,תמונה מקומית
-  //   width: 15,
-  //         height: 15
-  //       },
-  //       clearExisting: false,
-  //       data: {
-  //         headers: [`פרטי עסקה`],
-  //         bubbleUrl: `<div style="direction: rtl; font-family: Arial, sans-serif; padding: 10px;">
-  //   <p><strong>יישוב:</strong> ${row.ShmYeshuv}</p>
-  //   <p><strong>חלק נמכר:</strong> ${row.ShmMone}/${row.ShmMechane}</p>
-  //   <p><strong>מהות:</strong> ${row.ShmMahutIska}</p>
-  //   <p><strong>שווי מכירה:</strong> ${this.formatNumber(row.ShmShoviIska)} ₪</p>
-  //   <p><strong>יום מכירה:</strong> ${this.formatDate(row.ShmYomMechira)}</p>
-  // </div>`
-  //       }
-  //     });
-    // });
   }
+
   //מחזיר מיקום של קאורדינטה לפי כתובת
-  getCoordinates(address: string): Promise<{ corX: number, corY: number }> {
+  async getCoordinates(address: string): Promise<{ corX: number, corY: number }> {
     var params = {
       keyword: address,
       type: "AccuracyOnly"
@@ -171,6 +157,17 @@ export class GovMapService {
         throw new Error("לא נמצאו תוצאות");
       }
     });
+  }
+  async fillCorodinate(data: any) {
+    for (const row of data) {
+      if (row.CorX == null || row.CorY == null) {
+        if (row.ShmRehov.length) {
+          let point = await this.getCoordinates(`ירושלים ${row.ShmRehov} ${row.ShmMisparBayit}`);
+          row.CorX = point.corX;
+          row.CorY = point.corY;
+        }
+      }
+    }
   }
 }
 
