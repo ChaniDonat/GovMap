@@ -57,13 +57,13 @@ export interface GovMapObject {
     //     "RECTANGLE": 5,
     //     "SELECT_FEATURES": 6
     // },
-    // "geometryType": {
-    //     "POINT": 0,
-    //     "POLYLINE": 1,
-    //     "POLYGON": 2,
-    //     "LINE": 3,
-    //     "CIRCLE": 4
-    // },
+    "geometryType": {
+        "POINT": 0,
+        "POLYLINE": 1,
+        "POLYGON": 2,
+        "LINE": 3,
+        "CIRCLE": 4
+    },
     "drawType": {
         "Point": 0,
         "Polyline": 1,
@@ -80,10 +80,10 @@ export interface GovMapObject {
     //     "Quantile": 4,
     //     "ClassBreaks": 5
     // },
-    // "geocodeType": {
-    //     "FullResult": 0,
-    //     "AccuracyOnly": 1
-    // },
+    "geocodeType": {
+        "FullResult": 0,
+        "AccuracyOnly": 1
+    },
     // "saveAction": {
     //     "Delete": 1,
     //     "Update": 2,

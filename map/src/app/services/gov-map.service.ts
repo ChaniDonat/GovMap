@@ -94,9 +94,9 @@ export class GovMapService {
       this.govMap.displayGeometries({
         wkts: [`POINT(${CorX} ${CorY})`],
         names: ['bubble'],
-        geometryType: this.govMap.drawType.Point,
+        geometryType: this.govMap.geometryType.POINT,
         defaultSymbol: {
-          url: 'http://localhost:4200/assets/images/geo-alt-fill.svg',//,תמונה מקומית
+          url: 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTYiIGhlaWdodD0iMTYiIHZpZXdCb3g9IjAgMCAxNiAxNiIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4NCiAgICA8cGF0aA0KICAgICAgICBkPSJNOCAxNkM4IDE2IDE0IDEwLjMxMzcgMTQgNkMxNCAyLjY4NjI5IDExLjMxMzcgMCA4IDBDNC42ODYyOSAwIDIgMi42ODYyOSAyIDZDMiAxMC4zMTM3IDggMTYgOCAxNlpNOCA5QzYuMzQzMTUgOSA1IDcuNjU2ODUgNSA2QzUgNC4zNDMxNSA2LjM0MzE1IDMgOCAzQzkuNjU2ODUgMyAxMSA0LjM0MzE1IDExIDZDMTEgNy42NTY4NSA5LjY1Njg1IDkgOCA5WiINCiAgICAgICAgZmlsbD0iI0Q5MzMxRCIgLz4NCjwvc3ZnPg==',
           width: 30,
           height: 34
         },
@@ -113,6 +113,7 @@ export class GovMapService {
   }
   //הצגת המיקומים של כל העסקאות בנקודה כחולה
   async showPoints(data: any) {
+    console.log("showPoints", data);
     if (!this.govMap) {
       console.error('GovMap is not initialized');
       return;
@@ -121,53 +122,56 @@ export class GovMapService {
       return [row.ShmYeshuv, row.ShmMone, row.ShmMechane, this.formatNumber(row.ShmShoviIska), this.formatDate(row.ShmYomMechira)]
     })
     this.govMap.displayGeometries({
-      wkts: data.map((p: any) => `POINT(${p.CorX} ${p.CorY})`),
-      names: data.map((_: any, i: number) => `point${i}`),
-      geometryType: this.govMap.drawType.Point,
-      defaultSymbol: {
-        url: 'http://localhost:4200/assets/images/circle-blue.svg',//,תמונה מקומית
+        wkts: data.map((p: any) => `POINT(${p.CorX} ${p.CorY})`),
+        names: data.map((_: any, i: number) => `point${i}`),
+        geometryType: this.govMap.geometryType.POINT,
+        defaultSymbol: {
+          url: `data:image/svg+xml;charset=utf-8,
+  <svg xmlns="http://www.w3.org/2000/svg" width="30" height="30">
+    <circle cx="15" cy="15" r="10" fill="blue"/>
+  </svg>`,//,תמונה מקומית
         width: 15,
         height: 15
       },
       clearExisting: false,
       data: {
-        headers: data.map(() => `פרטי עסקה`),
-        bubbleHTML: this.bubbleContent,
-        bubbleHTMLParameters: bubbleHTMLParameters
-      }
-    });
-  }
+      headers: data.map(() => `פרטי עסקה`),
+      bubbleHTML: this.bubbleContent,
+      bubbleHTMLParameters: bubbleHTMLParameters
+    }
+      });
+}
 
   //מחזיר מיקום של קאורדינטה לפי כתובת
-  async getCoordinates(address: string): Promise<{ corX: number, corY: number }> {
-    var params = {
-      keyword: address,
-      type: "AccuracyOnly"
-    };
+  async getCoordinates(address: string): Promise < { corX: number, corY: number } > {
+  var params = {
+    keyword: address,
+    type: this.govMap!.geocodeType.AccuracyOnly
+  };
 
-    return this.govMap!.geocode(params).then((response: any) => {
-      console.log("תוצאה:", response);
-      if (response.data?.length > 0) {
-        return {
-          corX: response.data[0].X,
-          corY: response.data[0].Y
-        }
+  return this.govMap!.geocode(params).then((response: any) => {
+    console.log("תוצאה:", response);
+    if (response.data?.length > 0) {
+      return {
+        corX: response.data[0].X,
+        corY: response.data[0].Y
       }
-      else {
-        throw new Error("לא נמצאו תוצאות");
-      }
-    });
-  }
+    }
+    else {
+      throw new Error("לא נמצאו תוצאות");
+    }
+  });
+}
   async fillCorodinate(data: any) {
-    for (const row of data) {
-      if (row.CorX == null || row.CorY == null) {
-        if (row.ShmRehov.length) {
-          let point = await this.getCoordinates(`ירושלים ${row.ShmRehov} ${row.ShmMisparBayit}`);
-          row.CorX = point.corX;
-          row.CorY = point.corY;
-        }
+  for (const row of data) {
+    if (row.CorX == null || row.CorY == null) {
+      if (row.ShmRehov.length) {
+        let point = await this.getCoordinates(`ירושלים ${row.ShmRehov} ${row.ShmMisparBayit}`);
+        row.CorX = point.corX;
+        row.CorY = point.corY;
       }
     }
   }
+}
 }
 
